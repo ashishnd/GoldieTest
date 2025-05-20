@@ -1,0 +1,45 @@
+/* theme.css */
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --input-bg: #ffffff;
+  --input-text: #000000;
+  --button-bg: #333333;
+  --button-text: #ffffff;
+  --dropzone-bg: #f9f9f9;
+  --dropzone-border: #cccccc;
+}
+
+[data-theme='dark'] {
+  --background-color: #121212;
+  --text-color: #ffffff;
+  --input-bg: #1e1e1e;
+  --input-text: #ffffff;
+  --button-bg: #ffffff;
+  --button-text: #000000;
+  --dropzone-bg: #1c1c1c;
+  --dropzone-border: #888888;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+input, textarea {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--dropzone-border);
+}
+
+button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+.dropzone {
+  background-color: var(--dropzone-bg);
+  color: var(--text-color);
+  border: 2px dashed var(--dropzone-border);
+}
