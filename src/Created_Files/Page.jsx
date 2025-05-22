@@ -1,6 +1,13 @@
 import React, { useState, useRef } from 'react';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 // DOWNLOADED SUCCESS/ERROR SOUND FROM PIXABAY //
+
+
 function Page() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileDetails, setFileDetails] = useState(null);
@@ -8,8 +15,13 @@ function Page() {
    const [enteredVersion,setEnteredVersion]=useState('');
   const [shake,setShake]=useState(false);
 
+
+  const [showCalendar , setShowCalendar]=useState(false);
+  const [scheduledDate , setScheduledDate] = useState(new Date());
+
   const success=useRef(new Audio('/sounds/success.mp3'));
   const error=useRef(new Audio('/sounds/error.mp3'));
+
   const handleChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -21,7 +33,8 @@ function Page() {
   if (!selectedFile) {
     error.current.play();
     setShake(true);
-    alert('Please select a file first.');
+    //alert('Please select a file first.');
+    toast.error("You have not selected a file. Please Select a file first .")
     setTimeout(() => setShake(false), 500);
     return;
   }
@@ -29,7 +42,9 @@ function Page() {
   if (!enteredVersion.trim()) {
     error.current.play();
     setShake(true);
-    alert('Please enter the version.');
+    //alert('Please enter the version.');
+    toast.error("Please enter the correct version.")
+
     setTimeout(() => setShake(false), 500);
     return;
   }
@@ -39,17 +54,39 @@ function Page() {
 
   if (!fileVersionMatch || fileVersionMatch[1] !== enteredVersion.trim()) {
     error.current.play();
-    alert('File version mismatch!');
+    //alert('File version mismatch!');
+    toast.error("File version mismatch!")
+    setTimeout(() => setShake(false), 500);
     return;
   }
 
   success.current.play();
+  toast.success("File uploaded and version matched successfully!")
+  setTimeout(() => setShake(false), 500);
   setFileDetails(selectedFile);
 };
 
 
   const handleBoxClick = () => {
     fileInputRef.current.click();
+  };
+
+  const handleScheduleConfirm = async () => {
+    try {
+      await fetch('http://localhost:5000/api/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: scheduledDate.toISOString().split('T')[0],
+          fileName: fileDetails.name,
+        }),
+      });
+      alert('Release scheduled for ' + scheduledDate.toDateString());
+      setShowCalendar(false);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to schedule release');
+    }
   };
 
   return (
@@ -100,6 +137,17 @@ function Page() {
 }
         `}
       </style>
+
+       {/* Toast Notification Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
 
       <center>
         <div style={{textAlign: 'center', marginBottom: '10px'}}>
@@ -187,10 +235,35 @@ function Page() {
                   borderRadius: '4px',
                   cursor: 'pointer',
                 }}
+                onClick={() => setShowCalendar(!showCalendar)}
               >
                 Schedule Release
               </button>
             </div>
+            {showCalendar && (
+              <div style={{ marginTop: '20px' , justifyContent:'center'}}>
+                <h4>Select Release Date</h4>
+                <DatePicker
+                  selected={scheduledDate}
+                  onChange={(date) => setScheduledDate(date)}
+                  inline
+                />
+                <button
+                  onClick={handleScheduleConfirm}
+                  style={{
+                    marginTop: '10px',
+                    padding: '8px 16px',
+                    backgroundColor: 'green',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Confirm Schedule
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

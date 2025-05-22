@@ -19,12 +19,17 @@ function Sidebar() {
         <div
           className="sidebar"
           style={{
+            position: 'fixed',
+            top:0,
+            left:0,
             width: isOpen ? '200px' : '60px',
             background: '#000',
             color: 'white',
             padding: '10px',
             height: '100vh',
-            transition: 'width 0.3s ease'
+            transition: 'width 0.3s ease',
+            overflow:'auto',
+            zIndex: 1000
           }}
         >
           {/* Hamburger inside sidebar */}
@@ -57,7 +62,10 @@ function Sidebar() {
         </div>
 
         {/* Main Content */}
-        <div style={{ flex: 1, padding: '20px' }}>
+        <div style={{ marginLeft: isOpen ? '200px' : '60px',
+            padding: '20px',
+            transition: 'margin-left 0.3s ease',
+            width: '100%' }}>
           <Routes>
             <Route path="/" element={<Page />} />
             <Route path="/manage" element={<Manage />} />
